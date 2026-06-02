@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliana's ISEE Prep</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 40px;
+            color: #333;
+        }
+
+        h1 {
+            color: #d9383a;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Top Row styling */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .todo-container {
+            border: 2px solid #0099ff;
+            padding: 8px 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .todo-label {
+            color: #d9383a;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .radio-label {
+            color: #2b3bb5;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .go-btn {
+            border: 2px solid #d9383a;
+            background: white;
+            color: #d9383a;
+            font-weight: bold;
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+
+        .go-btn:hover {
+            background-color: #fdf2f2;
+        }
+
+        /* Subjects Section styling */
+        .subject-group {
+            margin-bottom: 25px;
+        }
+
+        .subject-title {
+            color: #d9383a;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="margin-bottom: 40px;">Eliana's ISEE Practice Board</h1>
+    
+    <form id="studyForm">
+        <!-- Top Parameter Bar -->
+        <div class="top-bar">
+            <div class="todo-container">
+                <span class="todo-label">To Do:</span>
+                
+                <label class="radio-label">
+                    <input type="radio" name="todo" value="1" checked> New
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="todo" value="2"> Wrong
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="todo" value="3"> New + Wrong
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="todo" value="4"> All
+                </label>
+            </div>
+
+            <button type="submit" class="go-btn">Go</button>
+        </div>
+
+        <!-- Subject Radio Group (All of them share the name "subjectUrl" to form a single group) -->
+        
+        <!-- Verbal Reasoning -->
+        <div class="subject-group">
+            <div class="subject-title">Verbal Reasoning</div>
+            <div class="options-list">
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="vp_1.html" checked> Synonyms
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="vp2.html"> Sentence Completion
+                </label>
+            </div>
+        </div>
+
+        <!-- Quantitative Reasoning -->
+        <div class="subject-group">
+            <div class="subject-title">Quantitative Reasoning</div>
+            <div class="options-list">
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/q2.html" > ??????
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/sentence.comp.html"> ??????
+                </label>
+            </div>
+        </div>
+
+        <!-- Reading Comprehension -->
+        <div class="subject-group">
+            <div class="subject-title">Reading Comprehension</div>
+            <div class="options-list">
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/description.html"> ??????
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/argument.html"> ??????
+                </label>
+            </div>
+        </div>
+
+        <!-- Math -->
+        <div class="subject-group">
+            <div class="subject-title">Mathematics Achievement</div>
+            <div class="options-list">
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/simple.arith.html"> ??????
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="subjectUrl" value="http://my_web/simple.geom.html"> ??????
+                </label>
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        document.getElementById('studyForm').addEventListener('submit', function(event) {
+            // Prevent the default form submission page reload
+            event.preventDefault();
+
+            // Get the selected "To Do" parameter value (1, 2, 3, or 4)
+            const selectedTodo = document.querySelector('input[name="todo"]:checked').value;
+
+            // Get the selected subject URL
+            const selectedUrl = document.querySelector('input[name="subjectUrl"]:checked').value;
+
+            // Construct the final URL with the "todo" parameter appended
+            const finalDestination = `/${selectedUrl}?todo=${selectedTodo}`;
+
+            // Open the constructed URL in a new browser tab
+            window.open(finalDestination, '_self');
+        });
+    </script>
+
+</body>
+</html>
