@@ -67,7 +67,10 @@ else if (toDo === '2') {
 else if (toDo === '3') {
   query = query.or('datetime.is.null,correct.neq.Y');
 }
-// Note: "4" does not need an 'else if' block because it returns all records without filters.
+else if (toDo === '4') {
+  query = query.or('correct.eq.Y');
+}
+// Note: "5" does not need an 'else if' block because it returns all records without filters.
 
 // 3. Execute the final filtered query
 const { data, error } = await query;
