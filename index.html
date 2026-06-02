@@ -178,7 +178,7 @@
             const selectedUrl = document.querySelector('input[name="subjectUrl"]:checked').value;
 
             // Construct the final URL with the "todo" parameter appended
-            const finalDestination = `/${selectedUrl}?todo=${selectedTodo}`;
+            const finalDestination = `/study/${selectedUrl}?todo=${selectedTodo}`;
 
             // Open the constructed URL in a new browser tab
             window.open(finalDestination, '_self');
