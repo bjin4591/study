@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliana's ISEE Prep</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      .syn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      #total {
+        font-size: 1rem;
+        color: #555;
+      }
+    </style>
 </head>
 
 <body>
@@ -14,7 +25,11 @@
 <a id="home-btn" style="color: #d9383a; font-family: 'Times New Roman', Times, serif;
   font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" >Eliana's ISEE Practice Board</a>
     
-    <h2>Synonyms</h2>
+    <div class="syn-header">
+      <h2>Synonyms</h2>
+      <label id="total"></label>
+    </div>
+    
     <ul id="records-list">Loading records...</ul>
 
     <div id="quiz-container"></div>
@@ -117,6 +132,10 @@ function renderRecord(supabaseClient, data) {
             </div>
         `;
 
+        let counter = current + 1;
+        let total = data.length;
+        document.getElementById("total").textContent = `${counter}/${total}`;
+    
         // Disable the Back or Next button, if needed
         if (current === 0) {
             const backBtn = document.getElementById('back-btn');
