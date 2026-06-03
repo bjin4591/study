@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliana's ISEE Prep</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      .syn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      #total {
+        font-size: 1rem;
+        color: #555;
+      }
+    </style>
+</head>
+
+<body>
+
+<h1> </h1>
+<a id="home-btn" style="color: #d9383a; font-family: 'Times New Roman', Times, serif;
+  font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" >Eliana's Drinking the ISEE</a>
+    
+    <div class="syn-header">
+      <h2>Synonyms and Words</h2>
+      <label id="total"></label>
+    </div>
+    
+    <ul id="records-list">Loading records...</ul>
+
+    <div id="quiz-container"></div>
+
+
+<script>
+
+    let current = 0;  
+
+    // Get a reference to the main container in your HTML
+    const mainContainer = document.getElementById('quiz-container');
+
+async function getRecords ()
+{
+        const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const toDo = urlParams.get('todo');
+
+// 1. Initialize the base query structure
+let query = supabaseClient
+  .from('vp')
+  .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer')
+  .order('id'); 
+
+// 2. Apply filters conditionally based on the "todo" value
+if (toDo === '1') {
+  query = query.is('datetime', null);
+} 
+else if (toDo === '2') {
+  query = query.not('datetime', 'is', null).neq('correct', 'Y');
+} 
+else if (toDo === '3') {
+  query = query.or('datetime.is.null,correct.neq.Y');
+}
+else if (toDo === '4') {
+  query = query.or('correct.eq.Y');
+}
+// Note: "5" does not need an 'else if' block because it returns all records without filters.
+
+// 3. Execute the final filtered query
+const { data, error } = await query;
+
+    if (error) {
+        console.error('Error fetching data:', error);
+    }
+
+    let records = [];
+
+    if (data) {
+        records = data.map(record => ({
+            ...record,
+            selection: null
+        }));
+    }
+
+    const listElement = document.getElementById('records-list');
+    listElement.innerHTML = '';
+
+    if (!data || data.length === 0) {
+        listElement.textContent = 'No questions found.';
+    }
+
+    renderRecord(supabaseClient, records);
+}
+
+function renderRecord(supabaseClient, data) {
+
+        // Prevent array out-of-bounds errors
+        if (!data || data.length === 0 || current < 0 || current >= data.length) 
+        {
+           //return;
+        }
+
+        // Get the current record
+        const record = data[current];
+
+        // Generate the container's HTML default display:
+        const currentSelection = "";
+        mainContainer.innerHTML = `
+            <p style="margin-bottom: 20px; font-size: 16px;">${record.question}</p>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="B" currentSelection> ${record.choice_b}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="C" currentSelection> ${record.choice_c}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 20px;">
+                <label><input type="radio" name="quiz-choice" value="D" currentSelection> ${record.choice_d}</label>
+            </div>
+            <div style="text-align: right; width: 400px; margin-bottom: 30px;">
+                <button id="back-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Back</button>
+                <button id="submit-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Submit</button>
+                <button id="next-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Next</button>
+            </div>
+            <div id="explain-box" style="display: none; border: 1px solid black; padding: 15px; width: 400px; font-size: 20px;">
+                ${record.explain}
+            </div>
+        `;
+
+        let counter = current + 1;
+        let total = data.length;
+        document.getElementById("total").textContent = `${counter}/${total}`;
+    
+        // Disable the Back or Next button, if needed
+        if (current === 0) {
+            const backBtn = document.getElementById('back-btn');
+            backBtn.disabled = true;
+            backBtn.style.opacity = '0.5';
+            backBtn.style.cursor = 'not-allowed';
+        }
+        if (current === ( data.length - 1)) {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+        }
+
+        if (record.selection != null) {
+
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.selection) {
+                    radio.checked = true;
+                }
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+        } 
+
+
+        // Re-bind the three event listeners because all the buttons are recreated every render
+        document.getElementById('back-btn').addEventListener( 'click', () => {
+            if (current > 0) {
+                current--; // Decrease the index
+                renderRecord(supabaseClient, data); // Redraw the UI with the new record
+            }
+        } );
+        document.getElementById('next-btn').addEventListener( 'click', () => {
+            if (current < data.length - 1) {
+                current++; // Increase the index
+                renderRecord(supabaseClient, data); 
+             }
+        });
+        document.getElementById('submit-btn').addEventListener( 'click', async () => {
+        
+            const selectedRadio = document.querySelector('input[name="quiz-choice"]:checked');
+            if (!selectedRadio) {
+                alert("Please choose an answer.");
+                return; // 
+            }
+
+            // Update the daatabase:
+
+            // Generate a timestamp 
+            // 1. Create a formatter locked to Central timezone
+            const formatter = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Chicago',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            // 2. Break the current local time down into pieces
+            const parts = formatter.formatToParts(new Date());
+            const p = Object.fromEntries(parts.map(item => [item.type, item.value]));
+            // 3. Assemble into an ISO string WITHOUT any trailing 'Z' or offset
+            const currentTimestamp = `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+
+            const userChoice = selectedRadio.value; 
+            const correctAnswer = record.answer;  
+            let isCorrect = "";
+            if (userChoice === correctAnswer) { isCorrect = 'Y'; }
+
+                const { error: updateError } = await supabaseClient
+                    .from('vp')
+                    .update({ 
+                        correct: isCorrect, 
+                        datetime: currentTimestamp 
+                    })
+                    .eq('id', record.id); // Match the specific record by ID
+
+                if (updateError) {
+                    console.error('Update failed:', updateError);
+                    alert("Your answer is correct, but the database could not save it. Please click the Submit button again.");
+                    return; // Stop execution
+                }
+
+            // Pop-up info
+            if (userChoice === correctAnswer) {
+                alert("Congratulations! Your answer is correct.");
+            } else {
+                // --- Step 2-B: Answer is Incorrect ---
+                if (correctAnswer == 'A') { alert(`Sorry, the correct answer is: ${record.choice_a}`); }
+                if (correctAnswer == 'B') { alert(`Sorry, the correct answer is: ${record.choice_b}`); }
+                if (correctAnswer == 'C') { alert(`Sorry, the correct answer is: ${record.choice_c}`); }
+                if (correctAnswer == 'D') { alert(`Sorry, the correct answer is: ${record.choice_d}`); }
+            }
+    
+            // Remember this item was tried
+            data[current].selection = selectedRadio.value;
+
+            // Display the Explain
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+            // Disable all the radio buttons
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                // If this radio's value matches the correct answer, highlight its label parent
+                if (radio.value === correctAnswer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            });
+
+            // Hide the Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+        });  // End: document.getElementById('submit-btn').addEventListener()
+
+    } // End: function renderRecord
+
+
+    // 5. Initial call to display the first/chosen record on page load
+    getRecords();
+    
+
+</script>
+
+</body>
+</html>
