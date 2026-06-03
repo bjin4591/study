@@ -120,10 +120,10 @@
             <div class="subject-title">Verbal Reasoning</div>
             <div class="options-list">
                 <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="vp_1.html" checked> Synonyms and Words
+                    <input type="radio" name="subjectUrl" value="vp.html?grp=1" checked> Synonyms and Words
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="vp2.html"> Sentence Completion
+                    <input type="radio" name="subjectUrl" value="vp.html?grp=2"> Sentence Completion
                 </label>
             </div>
         </div>
@@ -181,7 +181,7 @@
             const selectedUrl = document.querySelector('input[name="subjectUrl"]:checked').value;
 
             // Construct the final URL with the "todo" parameter appended
-            const finalDestination = `/study/${selectedUrl}?todo=${selectedTodo}`;
+            const finalDestination = `/study/${selectedUrl}&todo=${selectedTodo}`;
 
             // Open the constructed URL in a new browser tab
             window.open(finalDestination, '_self');
