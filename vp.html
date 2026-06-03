@@ -49,12 +49,14 @@ async function getRecords ()
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       const urlParams = new URLSearchParams(window.location.search);
+      const grp = urlParams.get('grp');
       const toDo = urlParams.get('todo');
 
 // 1. Initialize the base query structure
 let query = supabaseClient
   .from('vp')
   .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer')
+  .eq('group', grp)
   .order('id'); 
 
 // 2. Apply filters conditionally based on the "todo" value
