@@ -56,7 +56,7 @@
         // 1. Initialize the base query structure
         let query = supabaseClient
           .from('vp')
-          .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer')
+          .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,count_c,count_w')
           .eq('grp', grp)
           .order('id'); 
 
