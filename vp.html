@@ -56,7 +56,7 @@
         // 1. Initialize the base query structure
         let query = supabaseClient
           .from('vp')
-          .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,count_c,count_w')
+          .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,grp,count_c,count_w')
           .eq('grp', grp)
           .order('id'); 
 
@@ -235,15 +235,16 @@
             let isCorrect = "";
             if (userChoice === correctAnswer) { isCorrect = 'Y'; }
 
+            alert(record.grp + " - " + record.id);
+            
                 const { error: updateError } = await supabaseClient
                     .from('vp')
                     .update({ 
                         correct: isCorrect, 
                         datetime: currentTimestamp 
                     })
-                    .eq('grp', grp)
-                    .eq('id', record.id);
-alert(grp + " - " + record.id);
+                    .eq('grp', record.grp)
+                    .eq('id',  record.id);
                 if (updateError) {
                     console.error('Update failed:', updateError);
                     alert("Your answer is correct, but the database could not save it. Please click the Submit button again.");
