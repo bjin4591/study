@@ -243,7 +243,7 @@
                     })
                     .eq('grp', record.grp)
                     .eq('id', record.id);
-
+alert(record.grp + " - " + record.id);
                 if (updateError) {
                     console.error('Update failed:', updateError);
                     alert("Your answer is correct, but the database could not save it. Please click the Submit button again.");
