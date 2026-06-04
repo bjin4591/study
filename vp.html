@@ -242,9 +242,6 @@
             else {
                 countWrong = countWrong + 1;
             }
-
-            alert(record.grp + " - " + record.id + " - " + countCorrect + " - " + countWrong );
-            
                 const { error: updateError } = await supabaseClient
                     .from('vp')
                     .update({ 
