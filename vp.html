@@ -233,15 +233,23 @@
             const userChoice = selectedRadio.value; 
             const correctAnswer = record.answer;  
             let isCorrect = "";
-            if (userChoice === correctAnswer) { isCorrect = 'Y'; }
+            if (userChoice === correctAnswer) { 
+                isCorrect = 'Y'; 
+                const countCorrect = record.count_c + 1;
+            }
+            else {
+                const countWrong = record.count_w + 1;
+            }
 
-            alert(record.grp + " - " + record.id);
+            alert(record.grp + " - " + record.id + " - " + countCorrect + " - " + countWrong );
             
                 const { error: updateError } = await supabaseClient
                     .from('vp')
                     .update({ 
                         correct: isCorrect, 
-                        datetime: currentTimestamp 
+                        datetime: currentTimestamp,
+                        count_c: countCorrect,
+                        count_w: countWrong,
                     })
                     .eq('grp', record.grp)
                     .eq('id',  record.id);
