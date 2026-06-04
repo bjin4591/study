@@ -112,6 +112,19 @@
         // Get the current record
         const record = data[current];
 
+        // Get the number of days for wait
+        let dayWait = 0;
+        if( record.datetime != null ) {
+            const lastDateDB = record.datetime.substring(0,10);
+            const lastDTString = lastDateDB + "T00:00:00-05:00";   // Standard CST offset
+            const lastDate = new Date(lastDTString); 
+            const todayCentralString = new Date().toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
+            const todayDate = new Date(todayCentralString);
+            const wait = todayDate - lastDate;
+            const days = Math.round(wait / (1000 * 60 * 60 * 24));  // Convert milliseconds to days (1000ms * 60s * 60m * 24h)
+            dayWait = 2 - days;    // 2 = maximum days in wait
+        }
+        
         document.getElementById("title").textContent = " ";
         if( grp === "1" ) {
             document.getElementById("title").textContent = "Synonyms and Words";
@@ -141,6 +154,9 @@
                 <button id="submit-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Submit</button>
                 <button id="next-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Next</button>
             </div>
+            <div style="text-align: right; width: 400px; margin-bottom: 30px;"> 
+                 <label id="notice"></label>
+            </div>
             <div id="explain-box" style="display: none; border: 1px solid black; padding: 15px; width: 400px; font-size: 20px;">
                 ${record.explain}
             </div>
@@ -164,7 +180,27 @@
             nextBtn.style.cursor = 'not-allowed';
         }
 
-        if (record.selection != null) {
+        // If still in the wait period:
+        if( dayWait > 0 ){
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.textContent = "Show";
+
+            // Show the notice
+            if( dayWait == 1 ) {
+                document.getElementById('notice').textContent = "( This question is for tomorrow or later.) "; 
+                }
+                if( dayWait == 2 ) {
+                document.getElementById('notice').textContent = "( This question is for the day after tomorrow or later.) "; 
+                }
+        }
+
+        // If not in the wait period and the answer is submitted, disable the radio buttons, and highlight the correct answer 
+        if (dayWait <= 0 && record.selection != null) {
 
             const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
             allRadios.forEach(radio => {
@@ -207,11 +243,34 @@
              }
         });
         document.getElementById('submit-btn').addEventListener( 'click', async () => {
-        
+
+          if(dayWait > 0){
+ 
+            // Show the correct answer
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+            } );
+
+            // Show the Explanation
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+          }
+          else{
+              
             const selectedRadio = document.querySelector('input[name="quiz-choice"]:checked');
             if (!selectedRadio) {
                 alert("Please choose an answer.");
-                return; // 
+                return; 
             }
 
             // Update the daatabase:
@@ -298,10 +357,11 @@
             submitBtn.style.opacity = '0.5';
             submitBtn.style.cursor = 'not-allowed';
 
+          }  // End of: if(wait === true) { } else { }
+            
         });  // End: document.getElementById('submit-btn').addEventListener()
 
     } // End: function renderRecord
-
 
     // 5. Initial call to display the first/chosen record on page load
     getRecords();
