@@ -57,7 +57,7 @@
         let query = supabaseClient
           .from('vp')
           .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer')
-          .eq('group', grp)
+          .eq('grp', grp)
           .order('id'); 
 
         // 2. Apply filters conditionally based on the "todo" value
@@ -241,7 +241,8 @@
                         correct: isCorrect, 
                         datetime: currentTimestamp 
                     })
-                    .eq('id', record.id); // Match the specific record by ID
+                    .eq('grp', record.grp)
+                    .eq('id', record.id);
 
                 if (updateError) {
                     console.error('Update failed:', updateError);
