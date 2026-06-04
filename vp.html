@@ -249,9 +249,7 @@
                     .from('vp')
                     .update({ 
                         correct: isCorrect, 
-                        datetime: currentTimestamp,
-                        count_c: countCorrect,
-                        count_w: countWrong
+                        datetime: currentTimestamp
                     })
                     .eq('grp', record.grp)
                     .eq('id',  record.id);
