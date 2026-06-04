@@ -233,12 +233,14 @@
             const userChoice = selectedRadio.value; 
             const correctAnswer = record.answer;  
             let isCorrect = "";
+            let countCorrect = 0;
+            let countWrong = 0;
             if (userChoice === correctAnswer) { 
                 isCorrect = 'Y'; 
-                const countCorrect = record.count_c + 1;
+                countCorrect = record.count_c + 1;
             }
             else {
-                const countWrong = record.count_w + 1;
+                countWrong = record.count_w + 1;
             }
 
             alert(record.grp + " - " + record.id + " - " + countCorrect + " - " + countWrong );
