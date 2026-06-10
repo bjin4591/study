@@ -1,85 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliana's ISEE Prep</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 40px;
-            color: #333;
-        }
-
-        h1 {
-            color: #d9383a;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        /* Top Row styling */
-        .top-bar {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .todo-container {
-            border: 2px solid #0099ff;
-            padding: 8px 15px;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .todo-label {
-            color: #d9383a;
-            font-weight: bold;
-            margin-right: 5px;
-        }
-        .radio-todo-label {
-            color: #2b3bb5;
-            font-size: 14px;
-            //font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-        .radio-label {
-            color: #2b3bb5;
-            font-size: 18px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .go-btn {
-            border: 2px solid #d9383a;
-            background: white;
-            color: #d9383a;
-            font-weight: bold;
-            padding: 8px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 2px;
-        }
-
-        .go-btn:hover {
-            background-color: #fdf2f2;
-        }
-
-        .str_lbl:hover {
-            background-color: #fdf2f2;
-        }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .syn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      #total {
+        font-size: 1rem;
+        color: #555;
+      }
         /* Pop up */
         dialog {
-            width: 80%;
-            max-width: 650px;
+            width: 100%;
+            max-width: 750px;
             font-family: Arial, sans-serif;
             font-size: 16px;
             line-height: 1.5;
@@ -104,129 +47,22 @@
             float: right;
             padding: 6px 16px;
         }
-        /* Subjects Section styling */
-        .subject-group {
-            margin-bottom: 25px;
-        }
-        .subject-title {
-            color: #d9383a;
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding-left: 20px;
-        }
-        /* Strategy label */
-        .str_hdr {
-            color: #2b3bb5;
-            font-size: 15px;
-            margin-left: 45px;
-        }
-        .str_lbl {
-            color: #2b3bb5;
-            font-size: 15px;
-            margin-left: 60px;
-        }
     </style>
 </head>
+
 <body>
 
-    <h1 style="margin-bottom: 40px;">Eliana's Drinking the ISEE</h1>
+<h1> </h1>
+<a id="home-btn" style="color: #d9383a; font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" >Eliana's Drinking the ISEE</a>
     
-    <form id="studyForm">
-        <!-- Top Parameter Bar -->
-        <div class="top-bar">
-            <div class="todo-container">
-                <span class="todo-label">To Do:</span>
-                <label class="radio-todo-label">
-                    <input type="radio" name="todo" value="1" checked> New
-                </label>
-                <label class="radio-todo-label">
-                    <input type="radio" name="todo" value="2"> Wrong
-                </label>
-                <label class="radio-todo-label">
-                    <input type="radio" name="todo" value="3"> New + Wrong
-                </label>
-                <label class="radio-todo-label">
-                    <input type="radio" name="todo" value="4"> Done
-                </label>
-                <label class="radio-todo-label">
-                    <input type="radio" name="todo" value="5"> All
-                </label>
-            </div>
+    <div class="syn-header">
+      <h2 id="title"></h2>
+      <label id="total"></label>
+    </div>
+    
+    <ul id="records-list">Loading records...</ul>
 
-            <button type="submit" class="go-btn">Go</button>
-        </div>
-
-        <!-- Subject Radio Group (All of them share the name "subjectUrl" to form a single group) -->
-        
-        <!-- Verbal Reasoning -->
-        <div class="subject-group">
-            <div class="subject-title">Verbal Reasoning</div>
-            <div class="options-list">
-
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="vp.html?grp=1" checked> Synonyms and Words
-                </label>
-                <div class="str_hdr" >(Suggested Strategies)</div>
-                <label id="strategy_1_1" class="str_lbl" onclick="showStrategy(1, 1)" ></label>
-                <label id="strategy_1_2" class="str_lbl" onclick="showStrategy(1, 2)" ></label>
-                <label id="strategy_1_3" class="str_lbl" onclick="showStrategy(1, 3)" ></label>
-                <label id="strategy_1_4" class="str_lbl" onclick="showStrategy(1, 4)" ></label>
-                <label id="strategy_1_5" class="str_lbl" onclick="showStrategy(1, 5)" ></label>
-
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="vp.html?grp=2"> Sentence Completion
-                </label>
-            </div>
-        </div>
-
-        <!-- Quantitative Reasoning -->
-        <div class="subject-group">
-            <div class="subject-title">Quantitative Reasoning</div>
-            <div class="options-list">
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/q2.html" > ??????
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/sentence.comp.html"> ??????
-                </label>
-            </div>
-        </div>
-
-        <!-- Reading Comprehension -->
-        <div class="subject-group">
-            <div class="subject-title">Reading Comprehension</div>
-            <div class="options-list">
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/description.html"> ??????
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/argument.html"> ??????
-                </label>
-            </div>
-        </div>
-
-        <!-- Math -->
-        <div class="subject-group">
-            <div class="subject-title">Mathematics Achievement</div>
-            <div class="options-list">
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/simple.arith.html"> ??????
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="subjectUrl" value="http://my_web/simple.geom.html"> ??????
-                </label>
-            </div>
-        </div>
-
-
-
-    </form>
+    <div id="quiz-container"></div>
 
     <dialog id="pop">
         <h2 id="popHeader"></h2>
@@ -234,82 +70,359 @@
         <button onclick="pop.close()">Close</button>
     </dialog>
 
-    <script>
 
-        let records = null;
+<script>
 
-        async function getRecords ()
+    let grp = null;
+    let current = 0;  
+
+    // Get a reference to the main container in your HTML
+    const mainContainer = document.getElementById('quiz-container');
+
+    async function getRecords ()
+    {
+        const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        grp = urlParams.get('grp');
+        const toDo = urlParams.get('todo');
+
+         try {
+            let mainQuery = supabaseClient
+              .from('vp')
+              .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,grp,datetime,count_c,count_w,strategy_id')
+              .eq('grp', grp)
+              .order('id'); 
+
+            // Apply your conditional filters exactly like you did before
+            if (toDo === '1') {
+              mainQuery = mainQuery.is('datetime', null);
+            } 
+            else if (toDo === '2') {
+              mainQuery = mainQuery.not('datetime', 'is', null).neq('correct', 'Y');
+            } 
+            else if (toDo === '3') {
+              mainQuery = mainQuery.or('datetime.is.null,correct.neq.Y');
+            }
+            else if (toDo === '4') {
+              mainQuery = mainQuery.or('correct.eq.Y');
+            }
+
+            const stgQuery = supabaseClient
+                   .from('strategy')
+                   .select('grp,id,name,detail'); 
+
+            // 3. Execute BOTH queries simultaneously using Promise.all
+            const [resMAIN, resSTG] = await Promise.all([mainQuery, stgQuery]);
+
+            // 4. Handle errors and pull the data arrays cleanly
+            if (resMAIN.error) throw resMAIN.error;
+            if (resSTG.error) throw resSTG.error;
+
+            const listElement = document.getElementById('records-list');
+            listElement.innerHTML = '';
+
+            const records = resMAIN.data;
+            const strategies = resSTG.data;
+            renderRecord(supabaseClient, records, strategies);
+
+          } catch (err) {
+            console.error("Failed to load page data:", err);
+          }
+    }
+
+    function renderRecord(supabaseClient, data, strategies) {
+
+        // Prevent array out-of-bounds errors
+        if (!data || data.length === 0 || current < 0 || current >= data.length) 
         {
-            const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
-            const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-            const { data, error } = await supabaseClient
-              .from('strategy')
-              .select('grp,id,name,detail,seq'); 
-
-            if (!error && data && data.length > 0) {
-                records = data;
-            }
-            else {
-                console.log("Got no records for Strategy");
-            }
-
-            /* Populate the strategy radiobutton labels */
-            let fld = " ";
-            for (const record of records) {
-                fld = 'strategy_' + record.grp + '_' + record.id;
-                document.getElementById(fld).textContent = record.name;
-            }
-
-       }
-
-       function showStrategy(in_grp, in_id) 
-       {
-
-
-           let detail = " ";
-           for (const record of records) {
-               if (record.grp == in_grp && record.id == in_id) {
-                   const rawTxt = record.detail;
-                   detail = rawTxt.replace(/\\n/g, '\n');
-                   break; 
-               }
-           }
-
-        const firstLineBreak = detail.indexOf('\n');
-        if (firstLineBreak > 0) {
-          popHeader.innerText = detail.substring(0, firstLineBreak).trim();
-          content.innerText = detail.substring(firstLineBreak).trim();
-        } else {
-          popHeader.innerText = "Strategy Note";
-          content.innerText = detail;
-        }
-        
-        pop.showModal();
-
+           //return;
         }
 
-        document.getElementById('studyForm').addEventListener('submit', function(event) {
-            // Prevent the default form submission page reload
-            event.preventDefault();
+        // Get the current record
+        const record = data[current];
 
-            // Get the selected "To Do" parameter value (1, 2, 3, or 4)
-            const selectedTodo = document.querySelector('input[name="todo"]:checked').value;
+        // Get the number of days for wait
+        let dayWait = 0;
+        if( record.datetime != null ) {
+            const lastDateDB = record.datetime.substring(0,10);
+            const lastDTString = lastDateDB + "T00:00:00-05:00";   // Standard CST offset
+            const lastDate = new Date(lastDTString); 
+            const todayCentralString = new Date().toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
+            const todayDate = new Date(todayCentralString);
+            const wait = todayDate - lastDate;
+            const days = Math.round(wait / (1000 * 60 * 60 * 24));  // Convert milliseconds to days (1000ms * 60s * 60m * 24h)
+            dayWait = 2 - days;    // 2 = maximum days in wait
+        }
 
-            // Get the selected subject URL
-            const selectedUrl = document.querySelector('input[name="subjectUrl"]:checked').value;
+        document.getElementById("title").textContent = " ";
+        if( grp === "1" ) {
+            document.getElementById("title").textContent = "Synonyms and Words";
+        }  
+        if( grp === "2" ) {
+            document.getElementById("title").textContent = "Sentence Completion";
+        }
 
-            // Construct the final URL with the "todo" parameter appended
-            const finalDestination = `/study/${selectedUrl}&todo=${selectedTodo}`;
+        // Generate the container's HTML default display:
+        const currentSelection = "";
+        mainContainer.innerHTML = `
+            <p style="margin-bottom: 20px; font-size: 16px;">${record.question}</p>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="B" currentSelection> ${record.choice_b}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="C" currentSelection> ${record.choice_c}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 20px;">
+                <label><input type="radio" name="quiz-choice" value="D" currentSelection> ${record.choice_d}</label>
+            </div>
+            <div style="margin-left: 30px; margin-bottom: 20px;">
+                <label id="strategy_name" ></label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 5px; text-align: right; width: 400px; margin-bottom: 30px; ">
+                <button id="back-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Back</button>
+                <button id="submit-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Submit</button>
+                <button id="next-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Next</button>
+            </div>
+            <div style="text-align: right; width: 400px; margin-bottom: 30px;"> 
+                 <label id="notice"></label>
+            </div>
+            <div id="explain-box" style="display: none; border: 1px solid black; padding: 15px; width: 400px; font-size: 20px;">
+                ${record.explain}
+            </div>
+        `;
 
-            // Open the constructed URL in a new browser tab
-            window.open(finalDestination, '_self');
+        let counter = current + 1;
+        let total = data.length;
+        document.getElementById("total").textContent = `${counter}/${total}`;
+
+        document.getElementById("strategy_name").textContent = '( Suggested Strategy: ' + strategies[record.strategy_id - 1].name + ' )';
+
+        // Disable the Back or Next button, if needed
+        if (current === 0) {
+            const backBtn = document.getElementById('back-btn');
+            backBtn.disabled = true;
+            backBtn.style.opacity = '0.5';
+            backBtn.style.cursor = 'not-allowed';
+        }
+        if (current === ( data.length - 1)) {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+        }
+
+        // If still in the wait period:
+        if( dayWait > 0 ){
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.textContent = "Show";
+
+            // Show the notice
+            if( dayWait == 1 ) {
+                document.getElementById('notice').textContent = "( This question is for tomorrow or later.) "; 
+                }
+                if( dayWait == 2 ) {
+                document.getElementById('notice').textContent = "( This question is for the day after tomorrow or later.) "; 
+                }
+        }
+
+        // If not in the wait period and the answer is submitted, disable the radio buttons, and highlight the correct answer 
+        if (dayWait <= 0 && record.selection != null) {
+
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.selection) {
+                    radio.checked = true;
+                }
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+        } 
+
+        // Re-bind the three event listeners because all the buttons are recreated every render
+        document.getElementById('back-btn').addEventListener( 'click', () => {
+            if (current > 0) {
+                current--; // Decrease the index
+                renderRecord(supabaseClient, data, strategies); // Redraw the UI with the new record
+            }
+        } );
+
+        document.getElementById('next-btn').addEventListener( 'click', () => {
+            if (current < data.length - 1) {
+                current++; // Increase the index
+                renderRecord(supabaseClient, data, strategies); 
+             }
         });
 
-        getRecords();
+        document.getElementById('strategy_name').addEventListener( 'click', () => {
 
-    </script>
+            const rawTxt = strategies[record.strategy_id - 1].detail;
+            const detail = rawTxt.replace(/\\n/g, '\n');
+            const firstLineBreak = detail.indexOf('\n');
+
+            if (firstLineBreak > 0) {
+              popHeader.innerText = detail.substring(0, firstLineBreak).trim();
+              content.innerText = detail.substring(firstLineBreak).trim();
+            } else {
+              popHeader.innerText = "Strategy Note";
+              content.innerText = detail;
+            }
+       
+            pop.showModal();
+        });
+
+        document.getElementById('submit-btn').addEventListener( 'click', async () => {
+
+          if(dayWait > 0){
+ 
+            // Show the correct answer
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+            } );
+
+            // Show the Explanation
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+          }
+          else{
+              
+            const selectedRadio = document.querySelector('input[name="quiz-choice"]:checked');
+            if (!selectedRadio) {
+                alert("Please choose an answer.");
+                return; 
+            }
+
+            // Update the database:
+
+            // Generate a timestamp 
+            // 1. Create a formatter locked to Central timezone
+            const formatter = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Chicago',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            // 2. Break the current local time down into pieces
+            const parts = formatter.formatToParts(new Date());
+            const p = Object.fromEntries(parts.map(item => [item.type, item.value]));
+            // 3. Assemble into an ISO string WITHOUT any trailing 'Z' or offset
+            const currentTimestamp = `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+
+            const userChoice = selectedRadio.value; 
+            const correctAnswer = record.answer;  
+            let isCorrect = "";
+            let countCorrect = record.count_c;
+            let countWrong = record.count_w;
+            if (userChoice === correctAnswer) { 
+                isCorrect = 'Y'; 
+                countCorrect = countCorrect + 1;
+            }
+            else {
+                countWrong = countWrong + 1;
+            }
+                const { error: updateError } = await supabaseClient
+                    .from('vp')
+                    .update({ 
+                        correct: isCorrect, 
+                        datetime: currentTimestamp,
+                        count_c: countCorrect,
+                        count_w: countWrong
+                    })
+                    .eq('grp', record.grp)
+                    .eq('id',  record.id);
+                if (updateError) {
+                    console.error('Update failed:', updateError);
+                    alert("Your answer is correct, but the database could not save it. Please click the Submit button again.");
+                    return; // Stop execution
+                }
+
+            // Pop-up info
+            if (userChoice === correctAnswer) {
+                alert("Congratulations! Your answer is correct.");
+            } else {
+                // --- Step 2-B: Answer is Incorrect ---
+                if (correctAnswer == 'A') { alert(`Sorry, the correct answer is: ${record.choice_a}`); }
+                if (correctAnswer == 'B') { alert(`Sorry, the correct answer is: ${record.choice_b}`); }
+                if (correctAnswer == 'C') { alert(`Sorry, the correct answer is: ${record.choice_c}`); }
+                if (correctAnswer == 'D') { alert(`Sorry, the correct answer is: ${record.choice_d}`); }
+            }
+    
+            // Remember this item was tried
+            data[current].selection = selectedRadio.value;
+
+            // Display the Explain
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+            // Disable all the radio buttons
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                // If this radio's value matches the correct answer, highlight its label parent
+                if (radio.value === correctAnswer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            });
+
+            // Hide the Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+          }  // End of: if(wait === true) { } else { }
+            
+        });  // End: document.getElementById('submit-btn').addEventListener()
+
+    } // End: function renderRecord
+
+    // 5. Initial call to display the first/chosen record on page load
+    getRecords();
+    
+
+</script>
 
 </body>
 </html>
