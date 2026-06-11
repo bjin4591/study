@@ -112,7 +112,9 @@
 
             const stgQuery = supabaseClient
                    .from('strategy')
-                   .select('grp,id,name,detail'); 
+                   .select('grp,id,name,detail')
+                   .eq('grp', grp)
+                   .order('id'); 
 
             // 3. Execute BOTH queries simultaneously using Promise.all
             const [resMAIN, resSTG] = await Promise.all([mainQuery, stgQuery]);
