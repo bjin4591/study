@@ -204,7 +204,7 @@
         document.getElementById("total").textContent = `${counter}/${total}`;
 
         for( const stg of strategies ) {
-            if(stg.id = record.strategy_id) {
+            if(stg.id === record.strategy_id) {
                 document.getElementById("strategy_name").textContent = '( Suggested Strategy: ' + stg.name + ' )';
                 break;
             }
