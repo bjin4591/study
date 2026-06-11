@@ -203,12 +203,12 @@
         let total = data.length;
         document.getElementById("total").textContent = `${counter}/${total}`;
 
-        let idx = 0;
-        idx = record.strategy_id;
-        idx = idx - 1;
-        console.log(idx);
-        console.log(strategies[0].name, strategies[1].name,strategies[2].name,strategies[3].name,strategies[4].name);
-        document.getElementById("strategy_name").textContent = '( Suggested Strategy: ' + strategies[idx].name + ' )';
+        for( const stg of strategies ) {
+            if(stg.id = record.strategy_id) {
+                document.getElementById("strategy_name").textContent = '( Suggested Strategy: ' + stg.name + ' )';
+                break;
+            }
+        }
 
         // Disable the Back or Next button, if needed
         if (current === 0) {
