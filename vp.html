@@ -44,8 +44,8 @@
             margin-bottom: 20px;
         }
         button {
-            float: right;
-            padding: 6px 16px;
+            float: center;
+            padding: 6px 20px;
         }
     </style>
 </head>
@@ -288,20 +288,22 @@
         });
 
         document.getElementById('strategy_name').addEventListener( 'click', () => {
-
-            const rawTxt = strategies[record.strategy_id - 1].detail;
-            const detail = rawTxt.replace(/\\n/g, '\n');
-            const firstLineBreak = detail.indexOf('\n');
-
-            if (firstLineBreak > 0) {
-              popHeader.innerText = detail.substring(0, firstLineBreak).trim();
-              content.innerText = detail.substring(firstLineBreak).trim();
-            } else {
-              popHeader.innerText = "Strategy Note";
-              content.innerText = detail;
+            for( const strg of strategies ) {
+                if( strg.id === record.strategy_id ) {
+                    const rawTxt = strg.detail;
+                    const detail = rawTxt.replace(/\\n/g, '\n');
+                    const firstLineBreak = detail.indexOf('\n');
+                    if (firstLineBreak > 0) {
+                      popHeader.innerText = detail.substring(0, firstLineBreak).trim();
+                      content.innerText = detail.substring(firstLineBreak).trim();
+                    } else {
+                      popHeader.innerText = "Strategy Note";
+                      content.innerText = detail;
+                    }
+                    pop.showModal();
+                    break;
+                }
             }
-       
-            pop.showModal();
         });
 
         document.getElementById('submit-btn').addEventListener( 'click', async () => {
