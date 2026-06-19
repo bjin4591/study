@@ -74,11 +74,16 @@
 
 <script>
 
-    let grp = null;
+    // let grp = null;
     let current = 0;  
 
     // Get a reference to the main container in your HTML
     const mainContainer = document.getElementById('quiz-container');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const cat = urlParams.get('cat');
+    const grp = urlParams.get('grp');
+    const toDo = urlParams.get('todo');
 
     async function getRecords ()
     {
@@ -86,14 +91,12 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        grp = urlParams.get('grp');
-        const toDo = urlParams.get('todo');
-
-         try {
+        let records = null;
+        let strategies = null;
+        try {
             let mainQuery = supabaseClient
-              .from('vp')
-              .select('id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,grp,datetime,count_c,count_w,strategy_id')
+              .from(cat)
+              .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,datetime,count_c,count_w,strategy_grp,strategy_id')
               .eq('grp', grp)
               .order('id'); 
 
@@ -113,7 +116,8 @@
 
             const stgQuery = supabaseClient
                    .from('strategy')
-                   .select('grp,id,name,detail')
+                   .select('cat,grp,id,name,detail')
+                   .eq('cat', cat)
                    .eq('grp', grp)
                    .order('id'); 
 
@@ -122,17 +126,21 @@
 
             // 4. Handle errors and pull the data arrays cleanly
             if (resMAIN.error) throw resMAIN.error;
-            if (resSTG.error) throw resSTG.error;
+            // if (resSTG.error) throw resSTG.error;
 
             const listElement = document.getElementById('records-list');
             listElement.innerHTML = '';
 
-            const records = resMAIN.data;
-            const strategies = resSTG.data;
-            renderRecord(supabaseClient, records, strategies);
+            records = resMAIN.data;
+            strategies = resSTG.data;
+
 
           } catch (err) {
             console.error("Failed to load page data:", err);
+          }
+
+          if(supabaseClient != null && records != null && records.length > 0){
+            renderRecord(supabaseClient, records, strategies);
           }
     }
 
@@ -160,13 +168,33 @@
             dayWait = 2 - days;    // 2 = maximum days in wait
         }
 
-        document.getElementById("title").textContent = " ";
-        if( grp === "1" ) {
-            document.getElementById("title").textContent = "Synonyms and Words";
-        }  
-        if( grp === "2" ) {
-            document.getElementById("title").textContent = "Sentence Completion";
+        let title = " ";
+        document.getElementById("title").textContent = title;
+        if( cat === "vp" ) {
+            switch ( grp ) {
+                case "1":
+                    title = "VR: Synonyms and Words";
+                    break;
+                case "2":
+                    title = "VR: Sentence Completion";
+                    break;
+                default:
+                    title = "Verbal Reasoning";   
+            }
         }
+        if( cat === "qp" ) {
+            switch ( grp ) {
+                case "1":
+                    title = "QR: Solve Simple Equation";
+                    break;
+                case "2":
+                    title = " ";
+                    break;
+                default:
+                    title = "Quantative Reasoning";   
+            }
+        }
+        document.getElementById("title").textContent = title;
 
         // Generate the container's HTML default display:
         const currentSelection = "";
@@ -204,10 +232,19 @@
         let total = data.length;
         document.getElementById("total").textContent = `${counter}/${total}`;
 
-        for( const stg of strategies ) {
-            if(stg.id === record.strategy_id) {
-                document.getElementById("strategy_name").textContent = '( Suggested Strategy: ' + stg.name + ' )';
-                break;
+        if(strategies != null){
+            let name_prefix = "";
+            if( cat === "vp" ) {
+                name_prefix = "Suggested Strategy";
+            }
+            if( cat === "qp" ) {
+                name_prefix = "How To";
+            }
+            for( const stg of strategies ) {
+                if(stg.id === record.strategy_id) {
+                    document.getElementById("strategy_name").textContent = '( ' + name_prefix + ': ' + stg.name + ' )';
+                    break;
+                }
             }
         }
 
@@ -289,6 +326,9 @@
         });
 
         document.getElementById('strategy_name').addEventListener( 'click', () => {
+            if(strategies === null){
+                return;
+            }
             for( const strg of strategies ) {
                 if( strg.id === record.strategy_id ) {
                     const rawTxt = strg.detail;
@@ -367,18 +407,18 @@
                 countWrong = countWrong + 1;
             }
                 const { error: updateError } = await supabaseClient
-                    .from('vp')
+                    .from(cat)
                     .update({ 
                         correct: isCorrect, 
                         datetime: currentTimestamp,
                         count_c: countCorrect,
                         count_w: countWrong
                     })
-                    .eq('grp', record.grp)
+                    .eq('grp', grp)
                     .eq('id',  record.id);
                 if (updateError) {
                     console.error('Update failed:', updateError);
-                    alert("Your answer is correct, but the database could not save it. Please click the Submit button again.");
+                    alert("Your answer cannot be saved to the database. Please click the Submit button again.");
                     return; // Stop execution
                 }
 
