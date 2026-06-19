@@ -98,7 +98,7 @@
               .from(cat)
               .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,datetime,count_c,count_w,strategy_grp,strategy_id')
               .eq('grp', grp)
-              .order('id'); 
+              .order('seq', 'id'); 
 
             // Apply your conditional filters exactly like you did before
             if (toDo === '1') {
