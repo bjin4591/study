@@ -108,7 +108,7 @@
               mainQuery = mainQuery.or('and(datetime.not.is.null,or(correct.neq.Y,correct.is.null,correct.eq.""))');
             } 
             else if (toDo === '3') {
-              mainQuery = mainQuery.or('datetime.is.null,correct.neq.Y,correct.is.null,correct.eq.""');
+              mainQuery = mainQuery.or('datetime.is.null,and(datetime.not.is.null,or(correct.neq.Y,correct.is.null,correct.eq.""))');
             }
             else if (toDo === '4') {
               mainQuery = mainQuery.or('correct.eq.Y');
