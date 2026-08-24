@@ -10,6 +10,11 @@
       body {
         font-family: Arial, Helvetica, sans-serif;
       }
+      h2 {
+        font-size: 20px;
+        color: #0066cc;
+        margin-top: 25px;
+      }
       .syn-header {
         display: flex;
         align-items: center;
@@ -54,7 +59,7 @@
 <body>
 
 <h1> </h1>
-<a id="home-btn" style="color: #d9383a; font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" >Eliana's Drinking the ISEE</a>
+<a id="home-btn" style="color: #d9383a; font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" ><i>Eliana's Drinking the ISEE</i></a>
     
     <div class="syn-header">
       <h2 id="title"></h2>
@@ -92,13 +97,13 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let records = null;
-        let strategies = null;
+
         try {
             let mainQuery = supabaseClient
               .from(cat)
-              .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,datetime,count_c,count_w,count_s,strategy_grp,strategy_id')
+              .select('grp,id,question,choice_a,choice_b,choice_c,choice_d,explain,answer,datetime,count_c,count_w')
               .eq('grp', grp)
-              .order('seq', 'id'); 
+              .order('seq'); 
 
             // Apply your conditional filters exactly like you did before
             if (toDo === '1') {
@@ -114,39 +119,30 @@
               mainQuery = mainQuery.or('correct.eq.Y');
             }
 
-            const stgQuery = supabaseClient
-                   .from('strategy')
-                   .select('cat,grp,id,name,detail')
-                   .eq('cat', cat)
-                   .eq('grp', grp)
-                   .order('id'); 
-
             // 3. Execute BOTH queries simultaneously using Promise.all
-            const [resMAIN, resSTG] = await Promise.all([mainQuery, stgQuery]);
+            const [resMAIN, resSTG] = await Promise.all([mainQuery]);
 
             // 4. Handle errors and pull the data arrays cleanly
             if (resMAIN.error) throw resMAIN.error;
-            // if (resSTG.error) throw resSTG.error;
 
             const listElement = document.getElementById('records-list');
             listElement.innerHTML = '';
 
             recordsDB = resMAIN.data;
-            strategies = resSTG.data;
 
-            // Add a new field: Shown
-            records = recordsDB.map(row => ({ ...row, submitted: 'N', shown: 'N' }));
 
           } catch (err) {
             console.error("Failed to load page data:", err);
           }
 
-          if(supabaseClient != null && records != null && records.length > 0){
-            renderRecord(supabaseClient, records, strategies);
+          if(supabaseClient != null && recordsDB != null && recordsDB.length > 0){
+            renderRecord(supabaseClient, recordsDB);
           }
     }
 
-    function renderRecord(supabaseClient, data, strategies) {
+    
+
+    function renderRecord(supabaseClient, data) {
 
         // Prevent array out-of-bounds errors
         if (!data || data.length === 0 || current < 0 || current >= data.length) 
@@ -172,28 +168,13 @@
 
         let title = " ";
         document.getElementById("title").textContent = title;
-        if( cat === "vp" ) {
+        if( cat === "tvqp" ) {
             switch ( grp ) {
-                case "1":
-                    title = "VR: Synonyms and Words";
-                    break;
-                case "2":
-                    title = "VR: Sentence Completion";
-                    break;
-                default:
-                    title = "Verbal Reasoning";   
-            }
-        }
-        if( cat === "qp" ) {
-            switch ( grp ) {
-                case "1":
-                    title = "QR: Algebraic Thinking";
-                    break;
-                case "2":
-                    title = "QR: Fractions, Decimals, and Percents";
-                    break;
-                default:
-                    title = "Quantative Reasoning";   
+                case "1": title = "Number & Operations: Place Values"; break;
+                case "4": title = "Number & Operations: Comparing Percents, Fractions & Decimals"; break;
+                case "5": title = "Number & Operations: Word Problems"; break;
+                case "6": title = "Number & Operations: Word Problems"; break;
+                default:  title = "Quantative Reasoning";   
             }
         }
         document.getElementById("title").textContent = title;
@@ -214,9 +195,6 @@
             <div style="margin-left: 20px; margin-bottom: 20px;">
                 <label><input type="radio" name="quiz-choice" value="D" currentSelection> ${record.choice_d}</label>
             </div>
-            <div style="margin-left: 30px; margin-bottom: 20px;">
-                <label id="strategy_name" ></label>
-            </div>
             <div style="display: flex; justify-content: flex-end; gap: 5px; text-align: right; width: 400px; margin-bottom: 30px; ">
                 <button id="back-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Back</button>
                 <button id="show-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Show</button>
@@ -235,21 +213,6 @@
         let total = data.length;
         document.getElementById("total").textContent = `${counter}/${total}`;
 
-        if(strategies != null){
-            let name_prefix = "";
-            if( cat === "vp" ) {
-                name_prefix = "Suggested Strategy";
-            }
-            if( cat === "qp" ) {
-                name_prefix = "How To";
-            }
-            for( const stg of strategies ) {
-                if(stg.id === record.strategy_id) {
-                    document.getElementById("strategy_name").textContent = '( ' + name_prefix + ': ' + stg.name + ' )';
-                    break;
-                }
-            }
-        }
 
         // Disable the Back or Next button, if needed
         if (current === 0) {
@@ -328,37 +291,15 @@
         document.getElementById('back-btn').addEventListener( 'click', () => {
             if (current > 0) {
                 current--; // Decrease the index
-                renderRecord(supabaseClient, data, strategies); // Redraw the UI with the new record
+                renderRecord(supabaseClient, data); // Redraw the UI with the new record
             }
         } );
 
         document.getElementById('next-btn').addEventListener( 'click', () => {
             if (current < data.length - 1) {
                 current++; // Increase the index
-                renderRecord(supabaseClient, data, strategies); 
+                renderRecord(supabaseClient, data); 
              }
-        });
-
-        document.getElementById('strategy_name').addEventListener( 'click', () => {
-            if(strategies === null){
-                return;
-            }
-            for( const strg of strategies ) {
-                if( strg.id === record.strategy_id ) {
-                    const rawTxt = strg.detail;
-                    const detail = rawTxt.replace(/\\n/g, '\n');
-                    const firstLineBreak = detail.indexOf('\n');
-                    if (firstLineBreak > 0) {
-                      popHeader.innerText = detail.substring(0, firstLineBreak).trim();
-                      content.innerText = detail.substring(firstLineBreak).trim();
-                    } else {
-                      popHeader.innerText = "Strategy Note";
-                      content.innerText = detail;
-                    }
-                    pop.showModal();
-                    break;
-                }
-            }
         });
 
         document.getElementById('show-btn').addEventListener( 'click', async () => {
@@ -479,10 +420,10 @@
                 alert("Congratulations! Your answer is correct.");
             } else {
                 // --- Step 2-B: Answer is Incorrect ---
-                if (correctAnswer == 'A') { alert(`Sorry, the correct answer is: ${record.choice_a}`); }
-                if (correctAnswer == 'B') { alert(`Sorry, the correct answer is: ${record.choice_b}`); }
-                if (correctAnswer == 'C') { alert(`Sorry, the correct answer is: ${record.choice_c}`); }
-                if (correctAnswer == 'D') { alert(`Sorry, the correct answer is: ${record.choice_d}`); }
+                if (correctAnswer == 'A') { alert(`Sorry, the correct answer is (A).`); }
+                if (correctAnswer == 'B') { alert(`Sorry, the correct answer is (B).`); }
+                if (correctAnswer == 'C') { alert(`Sorry, the correct answer is (C).`); }
+                if (correctAnswer == 'D') { alert(`Sorry, the correct answer is (D).`); }
             }
     
             // Remember this item was tried
@@ -519,6 +460,7 @@
         });  // End: document.getElementById('submit-btn').addEventListener()
 
     } // End: function renderRecord
+
 
     // 5. Initial call to display the first/chosen record on page load
     getRecords();
