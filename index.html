@@ -95,6 +95,12 @@
         color: #004499;
         text-decoration: underline; /* Shows underline only on hover for clarity */
     }
+
+    .stat-text {
+        color:#2b3bb5; 
+        font-size:0.9em;
+    }
+    
 </style>
 </head>
 
@@ -130,14 +136,37 @@
     
     <div class="subject-group">Numbers & Operations</div>
       <div class="subject-list">
-        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 1)">Place Values </a>
-        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 4)">Comparing Percents, Fractions & Decimals </a>
-        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 5)">Word Problems </a>
-        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 6)">Word Problems with Fractions & Decimals </a>
+        <div><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 1)">Place Values </a><span id="tvqp_stat_1" class="stat-text"></span></div>
+        <div><a id="tvqp_a_4" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 4)">Comparing Percents, Fractions & Decimals </a><span id="tvqp_stat_4" class="stat-text"></span></div>
+        <div><a id="tvqp_a_5" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 5)">Word Problems </a><span id="tvqp_stat_5" class="stat-text"></span></div>
+        <div><a id="tvqp_a_6" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 6)">Word Problems with Fractions & Decimals </a><span id="tvqp_stat_6" class="stat-text"></span></div>
       </div>
     </div>
 
 <script>
+
+    let tvqp_stats = {};
+    let record = null;
+
+    async function get_tvqp_stats()
+    {
+        const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const { data, error } = await supabaseClient
+            .rpc('get_tvqp_grp_stats');
+        if (error) {
+            console.error('Error:', error);
+        } else {
+            console.log('Results:', data);
+            record = data.find(row => row.grp === '1'); document.getElementById("tvqp_stat_1").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '4'); document.getElementById("tvqp_stat_4").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '5'); document.getElementById("tvqp_stat_5").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
+        }
+    }
+    
 function navigateToQuiz(event, cat, grp) {
     event.preventDefault();
     
@@ -154,6 +183,11 @@ function navigateToQuiz(event, cat, grp) {
     
     window.location.href = targetUrl;
 }
+
+(async () => {
+    await get_tvqp_stats();
+})();
+    
 </script>
 
 </body>
