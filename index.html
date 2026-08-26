@@ -100,7 +100,7 @@
         color:#2b3bb5; 
         font-size:0.9em;
     }
-    
+
 </style>
 </head>
 
@@ -166,7 +166,8 @@
             record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
         }
     }
-    
+
+
 function navigateToQuiz(event, cat, grp) {
     event.preventDefault();
     
@@ -179,7 +180,7 @@ function navigateToQuiz(event, cat, grp) {
     const currentHost = window.location.host;    
     
     // Construct the fully dynamic URL
-    const targetUrl = `${currentProtocol}//${currentHost}/study/vp.html?cat=${cat}&grp=${grp}&todo=${todoValue}`;
+    const targetUrl = `${currentProtocol}//${currentHost}/study/main.html?cat=${cat}&grp=${grp}&todo=${todoValue}`;
     
     window.location.href = targetUrl;
 }
@@ -187,7 +188,7 @@ function navigateToQuiz(event, cat, grp) {
 (async () => {
     await get_tvqp_stats();
 })();
-    
+
 </script>
 
 </body>
