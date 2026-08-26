@@ -160,10 +160,10 @@
             console.error('Error:', error);
         } else {
             console.log('Results:', data);
-            record = data.find(row => row.grp === '1'); document.getElementById("tvqp_stat_1").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
-            record = data.find(row => row.grp === '4'); document.getElementById("tvqp_stat_4").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
-            record = data.find(row => row.grp === '5'); document.getElementById("tvqp_stat_5").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
-            record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... total:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '1'); document.getElementById("tvqp_stat_1").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '4'); document.getElementById("tvqp_stat_4").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '5'); document.getElementById("tvqp_stat_5").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
         }
     }
 
