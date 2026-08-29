@@ -53,6 +53,15 @@
             justify-content: center;
             padding: 6px 20px;
         }
+        .question {
+            display: flex; 
+            flex-direction: column; 
+            align-items: 
+            flex-start; 
+            gap: 8px;
+            font-size: 16px;
+            margin-bottom: 20px; 
+        }
     </style>
 </head>
 
@@ -174,6 +183,7 @@
                 case "4": title = "Number & Operations: Comparing Percents, Fractions & Decimals"; break;
                 case "5": title = "Number & Operations: Word Problems"; break;
                 case "6": title = "Number & Operations: Word Problems with Fractions & Decimals"; break;
+                case "7": title = "Number & Operations: Estimation"; break;
                 default:  title = "Quantative Reasoning";   
             }
         }
@@ -182,7 +192,7 @@
         // Generate the container's HTML default display:
         const currentSelection = "";
         mainContainer.innerHTML = `
-            <p style="margin-bottom: 20px; font-size: 16px;">${record.question}</p>
+            <div id="question" class="question"></div>
             <div style="margin-left: 20px; margin-bottom: 10px;">
                 <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
             </div>
@@ -212,7 +222,7 @@
         let counter = current + 1;
         let total = data.length;
         document.getElementById("total").textContent = `${counter}/${total}`;
-
+        document.getElementById("question").innerHTML = `${record.question}`;
 
         // Disable the Back or Next button, if needed
         if (current === 0) {
