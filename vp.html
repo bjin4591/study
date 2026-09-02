@@ -196,7 +196,7 @@
         // Generate the container's HTML default display:
         const currentSelection = "";
         mainContainer.innerHTML = `
-            <div id="question" class="question"></div>
+            <div id="question" class="question">${record.question}</div>
             <div style="margin-left: 20px; margin-bottom: 10px;">
                 <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
             </div>
@@ -226,7 +226,7 @@
         let counter = current + 1;
         let total = data.length;
         document.getElementById("total").textContent = `${counter}/${total}`;
-        document.getElementById("question").innerHTML = `${record.question}`;
+
 
         // Disable the Back or Next button, if needed
         if (current === 0) {
