@@ -102,7 +102,7 @@
     }
 
     .link-block {
-        margin-top:10px;
+        margin-top:3px;
     }
 
     .link-note {
@@ -144,8 +144,7 @@
   <div class="subjects">
 
     <div class="subject-category">Math Reasoning & Achievements</div>
-    
-    <div class="subject-group">+-x÷=</div>
+    <div class="subject-group">+-x÷= (Numbers & Operations)</div>
       <div class="subject-list">
         <div class="link-block"><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 1)">.--. .-.. .- -.-. . / ...- .- .-.. ..- . ... (Place Values)</a><span id="tvqp_stat_1" class="stat-text"></span></div>
         <div class="link-block"><a id="tvqp_a_4" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 4)">-.-. --- -- .--. .- .-. .. -. --. / .--. . .-. -.-. . -. - ... --..-- / ..-. .-. .- -.-. - .. --- -. ... / .-... / -.. . -.-. .. -- .- .-.. ... (Comparing Percents, Fractions & Decimals)</a><span id="tvqp_stat_4" class="stat-text"></span></div>
@@ -158,18 +157,30 @@
       </div>
     </div>
 
+    <div class="subject-category">Reading Comprehension</div>
+      <div class="subject-list">
+        <table  style="width:600px;"><tbody>
+          <tr>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg',  9)">Passage #9</a><span id="tvpsg_stat_9" class="stat-text"></span></td>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 10)">Passage #10</a><span id="tvpsg_stat_10" class="stat-text"></span></td>
+          </tr><tr>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 11)">Passage #11</a><span id="tvpsg_stat_11" class="stat-text"></span></td>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 12)">Passage #12</a><span id="tvpsg_stat_12" class="stat-text"></span></td>
+          </tr>
+        <tbody></table>
+    </div>
 <script>
 
     let tvqp_stats = {};
     let record = null;
 
-    async function get_tvqp_stats()
+    async function get_stats()
     {
         const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const { data, error } = await supabaseClient
+        let { data, error } = await supabaseClient
             .rpc('get_tvqp_grp_stats');
         if (error) {
             console.error('Error:', error);
@@ -180,6 +191,17 @@
             record = data.find(row => row.grp === '5'); document.getElementById("tvqp_stat_5").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '7'); document.getElementById("tvqp_stat_7").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+        }
+        ({ data, error } = await supabaseClient
+            .rpc('get_psg_grp_stats'));
+        if (error) {
+            console.error('Error:', error);
+        } else {
+            console.log('Results:', data);
+            record = data.find(row => row.grp === '9');  document.getElementById("tvpsg_stat_9" ).textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '10'); document.getElementById("tvpsg_stat_10").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '11'); document.getElementById("tvpsg_stat_11").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '12'); document.getElementById("tvpsg_stat_12").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
         }
     }
 
@@ -196,13 +218,19 @@ function navigateToQuiz(event, cat, grp) {
     const currentHost = window.location.host;    
     
     // Construct the fully dynamic URL
-    const targetUrl = `${currentProtocol}//${currentHost}/study/vp.html?cat=${cat}&grp=${grp}&todo=${todoValue}`;
+    let targetUrl = "";
+    if( cat === "tvpsg" ) {
+       targetUrl = `${currentProtocol}//${currentHost}/study/rc.html?cat=${cat}&grp=${grp}&todo=${todoValue}`;
+    } 
+    else {
+       targetUrl = `${currentProtocol}//${currentHost}/study/vp.html?cat=${cat}&grp=${grp}&todo=${todoValue}`;
+    }
     
     window.location.href = targetUrl;
 }
 
 (async () => {
-    await get_tvqp_stats();
+    await get_stats();
 })();
 
 </script>
