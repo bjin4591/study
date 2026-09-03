@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliana's ISEE Prep</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      height: 100vh;      /* Force body to fill exact screen height */
+      overflow: hidden;   /* Disable main page body scrolling */
+      display: flex;
+      flex-direction: column; /* Stack top-bar and split-container vertically */
+      }
+        h1 {
+            color: #800080;
+            font-size: 24px;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+      h2 {
+        font-size: 20px;
+        color: #0066cc;
+        margin-top: 25px;
+      }
+      .syn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      #total {
+        font-size: 1rem;
+        color: #555;
+      }
+        /* Pop up */
+        dialog {
+            width: 90%;
+            max-width: 800px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 25px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        /* Style for the dynamic first line */
+        #popHeader {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        #content {
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+        button {
+            display: flex;
+            justify-content: center;
+            padding: 6px 20px;
+        }
+        .question {
+            display: flex; 
+            flex-direction: column; 
+            align-items: 
+            flex-start; 
+            gap: 8px;
+            font-size: 16px;
+            margin-bottom: 20px; 
+        }
+        img {
+           /* width: 70%; 
+            height: auto; */
+        }
+
+    /* 1. Reset margins and lock the main browser viewport */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    /* 2. Style the narrow common top bar */
+    .top-bar {
+      width: 100%;
+      color: red;
+      padding: 15px 30px;
+      border-bottom: 2px solid #2d3748;
+    }
+
+    .top-bar h1 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .top-bar p {
+      font-size: 0.9rem;
+    }
+      .syn-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      h2 {
+        font-size: 25px;
+        color: #0066cc;
+        margin-top: 25px;
+      }
+    /* 3. Create the 50/50 split container */
+    .split-container {
+      display: flex;
+      width: 100vw;
+      flex: 1;            /* Takes up 100% of the remaining height under the top bar */
+      overflow: hidden;   /* Prevents the container itself from breaking layout boundaries */
+    }
+
+    /* 4. Style both child windows */
+    .half-window {
+      flex: 1;            /* Forces both elements to share space exactly 50/50 */
+      height: 100%;       /* Fills the full height of the split container */
+      overflow-y: auto;   /* Enables independent vertical scrolling */
+      padding: 1px;
+    }
+
+    /* 5. Unique styling to visually differentiate the windows */
+    .left-side {
+      border-right: 2px solid #d0d7de;
+    }
+
+    /* Dummy tall content to force scrolling demo */
+    .scroll-content {
+      height: 2000px; 
+      /* background: linear-gradient(to bottom, #e2e8f0, #cbd5e1);  */
+      margin-top: 10px;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      justify-content: center; /* Centers items horizontally */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared Top Area -->
+  <div class="top-bar">
+     <a id="home-btn" style="color: #d9383a; font-weight: bold; font-size: 24px; text-decoration: none;" href="/study/index.html" ><i>Eliana's sigma rizzing the ISEE</i></a>
+    <div class="syn-header">
+      <h2 id="title">Reading Comprehension</h2>
+      <label id="total"></label>
+    </div>
+  </div>
+
+  <!-- Bottom Split Area -->
+  <div class="split-container">
+    
+    <!-- Left Child Window (50%) -->
+    <div class="half-window left-side">
+      <div class="scroll-content">
+        <div id="img"></div>
+      </div>
+    </div>
+
+    <!-- Right Child Window (50%) -->
+    <div class="half-window right-side">
+      <div class="scroll-content">
+        
+    <ul id="records-list">Loading records...</ul>
+
+    <div id="quiz-container"></div>
+
+    <dialog id="pop">
+        <h2 id="popHeader"></h2>
+        <div id="content"></div>
+        <button onclick="pop.close()">Close</button>
+    </dialog>
+
+
+<script>
+
+    // let grp = null;
+    let current = 0;  
+
+    // Get a reference to the main container in your HTML
+    const mainContainer = document.getElementById('quiz-container');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const cat = urlParams.get('cat');
+    const grp = urlParams.get('grp');
+    const toDo = urlParams.get('todo');
+
+    async function getRecords ()
+    {
+        const SUPABASE_URL = 'https://olvahkxlvzfrcowlysac.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_1NW2UZDMNzN-mC9rYLNZbg_KbS-H-Hx';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let records = null;
+
+        try {
+            let mainQuery = supabaseClient
+              .from(cat)
+              .select('grp,id,img,question,choice_a,choice_b,choice_c,choice_d,explain,answer,datetime,count_c,count_w')
+              .eq('grp', grp)
+              .order('seq'); 
+
+            // Apply your conditional filters exactly like you did before
+            if (toDo === '1') {
+              mainQuery = mainQuery.is('datetime', null);
+            } 
+            else if (toDo === '2') {
+              mainQuery = mainQuery.or('and(datetime.not.is.null,or(correct.neq.Y,correct.is.null,correct.eq.""))');
+            } 
+            else if (toDo === '3') {
+              mainQuery = mainQuery.or('datetime.is.null,and(datetime.not.is.null,or(correct.neq.Y,correct.is.null,correct.eq.""))');
+            }
+            else if (toDo === '4') {
+              mainQuery = mainQuery.or('correct.eq.Y');
+            }
+
+            // 3. Execute BOTH queries simultaneously using Promise.all
+            const [resMAIN, resSTG] = await Promise.all([mainQuery]);
+
+            // 4. Handle errors and pull the data arrays cleanly
+            if (resMAIN.error) throw resMAIN.error;
+
+            const listElement = document.getElementById('records-list');
+            listElement.innerHTML = '';
+
+            recordsDB = resMAIN.data;
+
+
+          } catch (err) {
+            console.error("Failed to load page data:", err);
+          }
+
+          if(supabaseClient != null && recordsDB != null && recordsDB.length > 0){
+            renderRecord(supabaseClient, recordsDB);
+          }
+    }
+
+    
+
+    function renderRecord(supabaseClient, data) {
+
+        // Prevent array out-of-bounds errors
+        if (!data || data.length === 0 || current < 0 || current >= data.length) 
+        {
+           //return;
+        }
+
+        // Get the current record
+        const record = data[current];
+
+        // Get the number of days for wait
+        let dayWait = 0;
+        if( record.datetime != null ) {
+            const lastDateDB = record.datetime.substring(0,10);
+            const lastDTString = lastDateDB + "T00:00:00-05:00";   // Standard CST offset
+            const lastDate = new Date(lastDTString); 
+            const todayCentralString = new Date().toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
+            const todayDate = new Date(todayCentralString);
+            const wait = todayDate - lastDate;
+            const days = Math.round(wait / (1000 * 60 * 60 * 24));  // Convert milliseconds to days (1000ms * 60s * 60m * 24h)
+            dayWait = 1 - days;    // 1 = maximum days in wait
+        }
+
+        document.getElementById("title").textContent = "Reading Comprehension: Passage #" + record.grp;
+
+        // Generate the container's HTML default display:
+        const currentSelection = "";
+        mainContainer.innerHTML = `
+            <div id="question" class="question">${record.question}</div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="B" currentSelection> ${record.choice_b}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">
+                <label><input type="radio" name="quiz-choice" value="C" currentSelection> ${record.choice_c}</label>
+            </div>
+            <div style="margin-left: 20px; margin-bottom: 20px;">
+                <label><input type="radio" name="quiz-choice" value="D" currentSelection> ${record.choice_d}</label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 5px; text-align: right; width: 400px; margin-top: 40px; margin-bottom: 30px; margin-left: 25px;">
+                <button id="back-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Back</button>
+                <button id="submit-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Submit</button>
+                <button id="next-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer;">Next</button>
+                <button id="show-btn" style="padding: 5px 15px; border: 1px solid black; background: white; cursor: pointer; margin-left: 80px;">Show</button>
+            </div>
+            <div style="text-align: right; width: 400px; margin-bottom: 30px;"> 
+                 <label id="notice"></label>
+            </div>
+            <div id="explain-box" style="display: none; border: 1px solid black; padding: 15px; width: 600px;">
+                 ${record.explain}
+            </div>
+        `;
+
+        let counter = current + 1;
+        let total = data.length;
+        document.getElementById("total").textContent = `${counter}/${total}`;
+        document.getElementById("img").innerHTML = record.img;
+
+        // Disable the Back or Next button, if needed
+        if (current === 0) {
+            const backBtn = document.getElementById('back-btn');
+            backBtn.disabled = true;
+            backBtn.style.opacity = '0.5';
+            backBtn.style.cursor = 'not-allowed';
+        }
+        if (current === ( data.length - 1)) {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+        }
+
+        // If still in the wait period:
+        if( dayWait > 0 ){
+
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            // Show the notice
+            if( dayWait == 1 ) {
+                document.getElementById('notice').textContent = "( This question is for tomorrow or later.) "; 
+                }
+                if( dayWait == 2 ) {
+                document.getElementById('notice').textContent = "( This question is for the day after tomorrow or later.) "; 
+                }
+        }
+
+        // If not in the wait period and the answer is submitted, disable the radio buttons, and highlight the correct answer 
+        if (dayWait <= 0 && record.selection != null) {
+
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.selection) {
+                    radio.checked = true;
+                }
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            } );
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+        } 
+
+        if(record.submitted === 'Y' || record.shown === 'Y') {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+        }
+
+
+        // Re-bind the three event listeners because all the buttons are recreated every render
+        document.getElementById('back-btn').addEventListener( 'click', () => {
+            if (current > 0) {
+                current--; // Decrease the index
+                renderRecord(supabaseClient, data); // Redraw the UI with the new record
+            }
+        } );
+
+        document.getElementById('next-btn').addEventListener( 'click', () => {
+            if (current < data.length - 1) {
+                current++; // Increase the index
+                renderRecord(supabaseClient, data); 
+             }
+        });
+
+        document.getElementById('show-btn').addEventListener( 'click', async () => {
+
+            // Show the correct answer, and disable all the answer choices
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                if (radio.value === record.answer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            } );
+
+            // Show the Explanation
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+            // Disable the Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            data[current].shown = 'Y';
+
+            // Update the database
+
+            let countShow = record.count_s;
+            countShow = countShow + 1;
+
+            // Generate a timestamp 
+            // 1. Create a formatter locked to Central timezone
+            const formatter = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Chicago',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            // 2. Break the current local time down into pieces
+            const parts = formatter.formatToParts(new Date());
+            const p = Object.fromEntries(parts.map(item => [item.type, item.value]));
+            // 3. Assemble into an ISO string WITHOUT any trailing 'Z' or offset
+            const currentTimestamp = `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+
+            const { error: updateError } = await supabaseClient
+                    .from(cat)
+                    .update({ 
+                        datetime: currentTimestamp,
+                        count_s: countShow
+                    })
+                    .eq('grp', grp)
+                    .eq('id',  record.id);
+            if (updateError) {
+                console.error('Update of the show count failed:', updateError);
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener( 'click', async () => {
+             
+            const selectedRadio = document.querySelector('input[name="quiz-choice"]:checked');
+            if (!selectedRadio) {
+                alert("Please choose an answer.");
+                return; 
+            }
+
+            // Update the database:
+
+            // Generate a timestamp 
+            // 1. Create a formatter locked to Central timezone
+            const formatter = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Chicago',
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                hour12: false
+            });
+            // 2. Break the current local time down into pieces
+            const parts = formatter.formatToParts(new Date());
+            const p = Object.fromEntries(parts.map(item => [item.type, item.value]));
+            // 3. Assemble into an ISO string WITHOUT any trailing 'Z' or offset
+            const currentTimestamp = `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+
+            const userChoice = selectedRadio.value; 
+            const correctAnswer = record.answer;  
+            let isCorrect = "";
+            let countCorrect = record.count_c;
+            let countWrong = record.count_w;
+            if (userChoice === correctAnswer) { 
+                isCorrect = 'Y'; 
+                countCorrect = countCorrect + 1;
+            }
+            else {
+                countWrong = countWrong + 1;
+            }
+                const { error: updateError } = await supabaseClient
+                    .from(cat)
+                    .update({ 
+                        correct: isCorrect, 
+                        datetime: currentTimestamp,
+                        count_c: countCorrect,
+                        count_w: countWrong
+                    })
+                    .eq('grp', grp)
+                    .eq('id',  record.id);
+                if (updateError) {
+                    console.error('Update of the Submit failed:', updateError);
+                    alert("Your answer cannot be saved to the database. Please click the Submit button again.");
+                    return; // Stop execution
+                }
+
+            // Pop-up info
+            if (userChoice === correctAnswer) {
+                alert("Congratulations! Your answer is correct.");
+            } else {
+                // --- Step 2-B: Answer is Incorrect ---
+                if (correctAnswer == 'A') { alert(`Sorry, the correct answer is (A).`); }
+                if (correctAnswer == 'B') { alert(`Sorry, the correct answer is (B).`); }
+                if (correctAnswer == 'C') { alert(`Sorry, the correct answer is (C).`); }
+                if (correctAnswer == 'D') { alert(`Sorry, the correct answer is (D).`); }
+            }
+    
+            // Remember this item was tried
+            data[current].selection = selectedRadio.value;
+
+            // Display the Explain
+            const explainBox = document.getElementById('explain-box');
+            explainBox.style.display = 'block';
+
+            // Disable all the radio buttons
+            const allRadios = mainContainer.querySelectorAll('input[name="quiz-choice"]');
+            allRadios.forEach(radio => {
+                // If this radio's value matches the correct answer, highlight its label parent
+                if (radio.value === correctAnswer) {
+                    const labelParent = radio.closest('label');
+                    if (labelParent) {
+                        labelParent.style.backgroundColor = '#d4edda'; // Soft light green
+                        labelParent.style.padding = '4px 8px';         // Adds space around text
+                        labelParent.style.borderRadius = '4px';       // Rounds the corners nicely
+                        labelParent.style.fontWeight = 'bold';        // Makes text pop out
+                    }
+                }
+                radio.disabled = true;
+            });
+
+            // Hide the Submit button
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            data[current].submitted = 'Y';
+           
+        });  // End: document.getElementById('submit-btn').addEventListener()
+
+    } // End: function renderRecord
+
+
+    // 5. Initial call to display the first/chosen record on page load
+    getRecords();
+    
+
+</script>
+
+
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
