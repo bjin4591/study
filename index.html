@@ -153,7 +153,7 @@
         <div class="link-block"><a id="tvqp_a_6" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 6)">.-- --- .-. -.. / .--. .-. --- -... .-.. . -- ... / .-- .. - .... / ..-. .-. .- -.-. - .. --- -. ... / .-... / -.. . -.-. .. -- .- .-.. ... (Word Problems with Fractions & Decimals)</a><span id="tvqp_stat_6" class="stat-text"></span></div>
             <div class="link-note"></div>
         <div class="link-block"><a id="tvqp_a_7" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 7)">. ... - .. -- .- - .. --- -.(Estimation)</a><span id="tvqp_stat_7" class="stat-text"></span></div>
-
+        <div class="link-block"><a id="tvqp_a_8" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 8)">Chart</a><span id="tvqp_stat_8" class="stat-text"></span></div>
       </div>
     </div>
 
@@ -191,6 +191,7 @@
             record = data.find(row => row.grp === '5'); document.getElementById("tvqp_stat_5").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '7'); document.getElementById("tvqp_stat_7").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '8'); document.getElementById("tvqp_stat_8").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
         }
         ({ data, error } = await supabaseClient
             .rpc('get_psg_grp_stats'));
