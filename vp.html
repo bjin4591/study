@@ -53,19 +53,6 @@
             justify-content: center;
             padding: 6px 20px;
         }
-        .question {
-            display: flex; 
-            flex-direction: column; 
-            align-items: 
-            flex-start; 
-            gap: 8px;
-            font-size: 16px;
-            margin-bottom: 20px; 
-        }
-    .question math {
-        display: inline;
-        vertical-align: middle;
-    }
     </style>
 </head>
 
@@ -196,7 +183,7 @@
         // Generate the container's HTML default display:
         const currentSelection = "";
         mainContainer.innerHTML = `
-            <div id="question" class="question">${record.question}</div>
+            <div id="question" style = "font-size: 16px; margin-bottom: 20px;">${record.question}</div>
             <div style="margin-left: 20px; margin-bottom: 10px;">
                 <label><input type="radio" name="quiz-choice" value="A" currentSelection> ${record.choice_a}</label>
             </div>
