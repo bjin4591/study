@@ -154,6 +154,8 @@
             <div class="link-note"></div>
         <div class="link-block"><a id="tvqp_a_7" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 7)">. ... - .. -- .- - .. --- -.(Estimation)</a><span id="tvqp_stat_7" class="stat-text"></span></div>
         <div class="link-block"><a id="tvqp_a_8" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 8)">Chart</a><span id="tvqp_stat_8" class="stat-text"></span></div>
+        <div class="link-block"><a id="tvqp_a_9" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 9)">Values & Properties</a><span id="tvqp_stat_9" class="stat-text"></span></div>
+        <div class="link-block"><a id="tvqp_a_10" href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 10>Mixed Practice</a><span id="tvqp_stat_10" class="stat-text"></span></div>
       </div>
     </div>
 
@@ -163,6 +165,9 @@
           <tr>
               <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg',  9)">Passage #9</a><span id="tvpsg_stat_9" class="stat-text"></span></td>
               <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 10)">Passage #10</a><span id="tvpsg_stat_10" class="stat-text"></span></td>
+          </tr><tr>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 11)">Passage #11</a><span id="tvpsg_stat_11" class="stat-text"></span></td>
+              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 12)">Passage #12</a><span id="tvpsg_stat_12" class="stat-text"></span></td>
           </tr>
         <tbody></table>
     </div>
@@ -189,6 +194,8 @@
             record = data.find(row => row.grp === '6'); document.getElementById("tvqp_stat_6").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '7'); document.getElementById("tvqp_stat_7").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '8'); document.getElementById("tvqp_stat_8").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '9'); document.getElementById("tvqp_stat_9").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
+            record = data.find(row => row.grp === '10'); document.getElementById("tvqp_stat_10").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
         }
         ({ data, error } = await supabaseClient
             .rpc('get_psg_grp_stats'));
@@ -198,8 +205,6 @@
             console.log('Results:', data);
             record = data.find(row => row.grp === '9');  document.getElementById("tvpsg_stat_9" ).textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
             record = data.find(row => row.grp === '10'); document.getElementById("tvpsg_stat_10").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
-            record = data.find(row => row.grp === '11'); document.getElementById("tvpsg_stat_11").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
-            record = data.find(row => row.grp === '12'); document.getElementById("tvpsg_stat_12").textContent = " ..... all:" + record.total + "  done:" + record.correct_ct;
         }
     }
 
@@ -246,12 +251,5 @@ function navigateToQuiz(event, cat, grp) {
         <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 8)">Charts </a>
         <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 9)">Number Lines</a>
         <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 10)">Vocabulary & Properties </a>
-        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 11)">Numbers & Operations Mixed Practice </a>
-/!>
-
-<!--
-          <tr>
-              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 11)">Passage #11</a><span id="tvpsg_stat_11" class="stat-text"></span></td>
-              <td><a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvpsg', 12)">Passage #12</a><span id="tvpsg_stat_12" class="stat-text"></span></td>
-          </tr>
+        <a href="#" class="subject-link" onclick="navigateToQuiz(event, 'tvqp', 11)">Mixed Practice </a>
 /!>
