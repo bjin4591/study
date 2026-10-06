@@ -2,7 +2,7 @@
 <div id="my-text"></div>
 
 <script>
-
+  
 // JavaScript
 document.getElementById("my-text").textContent = "hello";
 
