@@ -1,0 +1,19 @@
+import turtle
+
+t = turtle.Turtle()
+s = turtle.Screen()
+s.bgcolor("lavender")
+t.speed(0)
+n = 36
+h = 0
+colors = ["violet", "plum", "pastel purple", "white", "lilac", "purple"]
+for i in range(500):
+    # c = "#%02x%02x%02x" % (int(h * 255), int(1 * 255), int(0.9 * 255))
+    # h += 1/n
+    c = i % 6
+    t.color(colors[c])
+    t.left(145)
+    for j in range(5):
+        t.forward(300)
+        t.left(150)
+turtle.done()

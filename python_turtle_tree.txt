@@ -1,0 +1,80 @@
+import turtle
+import random
+
+def draw_floral_pattern(z,t):
+  x,y=z
+  t.penup()
+  t.setpos(z)
+  t.pendown()
+  t.color("red")
+  t.dot(4)
+  t.penup()
+  t.goto(x-2.66,y+5)
+  for _ in range(6):
+    t.pendown()
+    t.dot(3)
+    t.penup()
+    t.forward(5)
+    t.right(60)
+    t.pendown()
+    t.color('brown')
+    t.setpos(z)
+    return
+  
+def draw_leave_pattern(z,branch_len,t):
+    x,y=z
+    t.penup()
+    t.setpos(z)
+    t.pendown()
+    t.color("green")
+    t.dot(4)
+    t.penup()
+    for _ in range(random.randint(5,3*branch_len)):
+      t.goto(x+random.randint(-branch_len//3,branch_len//3),y+random.randint(-
+branch_len//3,branch_len//3))
+      t.pendown()
+      t.dot(3)
+      t.penup()
+    t.pendown()
+    t.color('brown')
+    t.setpos(z)
+    return
+  
+def draw_tree(branch_len, t):
+    if branch_len < 5 + random.randint(-5,5):
+      return
+    else:
+      t.pensize(branch_len/20)
+      t.forward(branch_len)
+      t.right(20)
+      draw_tree(branch_len - random.randint(8,15), t)
+      t.left(40)
+      draw_tree(branch_len - random.randint(8,15), t)
+      t.right(20)
+      if (branch_len>max_branch_len/4 and branch_len<=max_branch_len/4*3):
+         draw_leave_pattern(t.pos(),branch_len,t)
+      if branch_len<=15:
+         draw_floral_pattern(t.pos(),t)
+         t.backward(branch_len)
+        
+# Create the turtle
+t=turtle.Turtle()
+t.clear()
+t.home()
+t.up()
+t.setx(-50)
+t.down()
+# Set up the turtle's initial position and orientation
+t.color('brown')
+t.speed(0)
+t.left(90)
+t.up()
+t.backward(200)
+t.down()
+global max_branch_len
+# Draw the tree
+max_branch_len=65
+draw_tree(max_branch_len, t)
+
+t.hideturtle()
+t.done()

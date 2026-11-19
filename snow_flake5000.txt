@@ -1,0 +1,20 @@
+import turtle
+def draw_koch_curve(length, depth, t): # recursive function which calls itself
+ if depth == 0:
+   t.forward(length)
+ else:
+   for angle in [60, -120, 60, 0]:
+     draw_koch_curve(length/3, depth-1, t) # parameters has changed
+     t.left(angle)
+
+t = turtle.Turtle()
+t.speed(0)
+# Set up the turtle's initial position and orientation
+t.up()
+t.goto(-200, -100)
+t.down()
+# Draw the Koch Snowflake
+for _ in range(3):
+  draw_koch_curve(300, 4, t)
+  t.right(120)
+turtle.done()

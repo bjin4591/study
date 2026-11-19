@@ -1,0 +1,25 @@
+import turtle
+
+t = turtle.Turtle()
+t.speed(0)
+
+def draw_pattern(x, y, color, size=1.0):
+    t.penup()
+    t.goto(x, y)
+    t.pendown()
+    t.color(color)
+    for _ in range(30):
+        t.forward(100 * size)
+        t.right(45)
+        t.forward(50 * size)
+        t.right(90)
+        t.forward(50 * size)
+        t.right(45)
+        t.forward(100 * size)
+        t.right(100)
+draw_pattern(-180, -210, "blue", size=0.6)
+draw_pattern(180, 210, "purple", size=0.6)
+draw_pattern(0, -100, "teal", size=1.5)
+draw_pattern(-180, 220, "yellow", size=0.6)
+draw_pattern(180, -210, "red", size=0.6)
+turtle.done
